@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -316,7 +318,12 @@ order by
 
 		private static void PrintHelp(OptionSet optionSet)
 		{
-			Console.WriteLine("Usage: sqldump [OPTIONS] SERVER DATABASE [TABLES]");
+			PrintVersion();
+
+			var assemblyName = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule.FileName);
+
+			Console.WriteLine();
+			Console.WriteLine("Usage: " + assemblyName + " [OPTIONS] SERVER DATABASE [TABLES]");
 			Console.WriteLine();
 			Console.WriteLine("Options:");
 
@@ -325,9 +332,33 @@ order by
 
 		private static void PrintVersion()
 		{
-			var assemblyName = Assembly.GetEntryAssembly().GetName();
+			var version = Assembly.GetEntryAssembly().GetName().Version.ToString();
 
-			Console.WriteLine("{0} {1}", assemblyName.Name, assemblyName.Version);
+			if (version.Length % 2 == 1)
+				version = string.Format(" SQLDump  {0} ", version);
+			else
+				version = string.Format(" SQLDump {0} ", version);
+
+			var padding = new string(Enumerable.Repeat('8', (26 - version.Length)/2).ToArray());
+
+			var versionWithPadding = padding + version + padding;
+
+			Console.WriteLine();
+			Console.WriteLine(
+@"                        (                      
+                         )                     
+                    (   (                      
+                     )   b                     
+                    (    88_                   
+                      ___888b__                
+                    _d888888888b   (           
+           (    ___d888888888888_   )          
+            )  d88888888888888888b (           
+           (  d8888888888888888888__           
+           ___8888888888888888888888b          
+          d{0}b         
+          888888888888888888888888888P         
+          Y8888888888888888888888888P          ", versionWithPadding);
 		}
 
 		private class Options
