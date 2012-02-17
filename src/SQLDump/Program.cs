@@ -176,7 +176,7 @@ order by
 					while (reader.Read())
 					{
 						var tableName = reader.GetString(0);
-						var identityColumn = reader.GetString(1);
+						var identityColumn = reader.IsDBNull(1) ? null : reader.GetString(1);
 
 						tableList.Add(new TableInfo {Name = tableName, IdentityColumn = identityColumn});
 					}
